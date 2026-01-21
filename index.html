@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Self-Diagnosing Communication System Simulator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <h1>🩺 Self-Diagnosing Communication System Simulator</h1>
+      <p>Inject faults, watch metrics evolve, and see the system explain its own failures—all in a static, client-only demo.</p>
+    </div>
+    <div class="hero-actions">
+      <button id="start-btn" class="primary">▶ Start / Continue</button>
+      <button id="pause-btn">⏸ Pause</button>
+      <button id="step-btn">Step once</button>
+      <button id="reset-btn">🧹 Reset</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel controls">
+      <h2>Fault Injection</h2>
+      <p class="muted">Adjust sliders to inject degradations into the virtual link. No backend, no installs—everything runs in your browser.</p>
+
+      <div class="control">
+        <label for="noise">Noise spike level <span id="noise-val" class="value">0.0</span></label>
+        <input id="noise" type="range" min="0" max="1" step="0.1" value="0" />
+        <p class="hint">Impulsive noise bursts causing SNR dips and BER spikes.</p>
+      </div>
+
+      <div class="control">
+        <label for="jammer">Wideband jammer level <span id="jammer-val" class="value">0.0</span></label>
+        <input id="jammer" type="range" min="0" max="1" step="0.1" value="0" />
+        <p class="hint">Persistent interference lowering SNR, increasing BER and retries.</p>
+      </div>
+
+      <div class="control">
+        <label for="sync">Sync loss probability <span id="sync-val" class="value">0.00</span></label>
+        <input id="sync" type="range" min="0" max="0.5" step="0.05" value="0" />
+        <p class="hint">Chance of a synchronization outage on any given tick.</p>
+      </div>
+
+      <div class="control">
+        <label for="congestion">Congestion level <span id="congestion-val" class="value">0.0</span></label>
+        <input id="congestion" type="range" min="0" max="1" step="0.1" value="0" />
+        <p class="hint">Queueing / buffer pressure raising latency and retries.</p>
+      </div>
+
+      <div class="control">
+        <label for="fading">Fading severity <span id="fading-val" class="value">0.0</span></label>
+        <input id="fading" type="range" min="0" max="1" step="0.1" value="0" />
+        <p class="hint">Channel fading creating SNR fluctuations and BER variation.</p>
+      </div>
+    </section>
+
+    <section class="panel dashboard">
+      <div class="panel-header">
+        <h2>Symptom Dashboard</h2>
+        <p class="muted">Live metrics: SNR, BER, latency, retries.</p>
+      </div>
+      <div class="cards" id="metric-cards">
+        <div class="card"><div class="label">SNR (dB)</div><div class="value" id="snr-card">--</div></div>
+        <div class="card"><div class="label">BER</div><div class="value" id="ber-card">--</div></div>
+        <div class="card"><div class="label">Latency (ms)</div><div class="value" id="latency-card">--</div></div>
+        <div class="card"><div class="label">Retries</div><div class="value" id="retries-card">--</div></div>
+      </div>
+      <div class="charts">
+        <div class="chart">
+          <div class="chart-title">SNR (dB)</div>
+          <canvas id="snr-chart" width="340" height="140"></canvas>
+        </div>
+        <div class="chart">
+          <div class="chart-title">BER</div>
+          <canvas id="ber-chart" width="340" height="140"></canvas>
+        </div>
+        <div class="chart">
+          <div class="chart-title">Latency (ms)</div>
+          <canvas id="latency-chart" width="340" height="140"></canvas>
+        </div>
+        <div class="chart">
+          <div class="chart-title">Retries</div>
+          <canvas id="retries-chart" width="340" height="140"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel diagnosis">
+      <div class="panel-header">
+        <h2>Diagnosis Panel</h2>
+        <p class="muted">Rule-based inference grounded in communication heuristics.</p>
+      </div>
+      <div id="diag-primary" class="diag-primary">No diagnosis yet. Press start.</div>
+      <div class="diag-confidence">
+        <h3>Root cause confidence</h3>
+        <div id="confidence-bars" class="confidence-bars"></div>
+      </div>
+      <div class="diag-actions">
+        <h3>Suggested corrective actions</h3>
+        <ul id="actions-list"></ul>
+      </div>
+      <div class="diag-evidence">
+        <h3>Rule evidence</h3>
+        <ul id="evidence-list"></ul>
+      </div>
+    </section>
+
+    <section class="panel ground-truth">
+      <div class="panel-header">
+        <h2>Ground Truth vs Diagnosis</h2>
+        <p class="muted">The simulator knows the injected faults; the diagnostic engine only sees metrics.</p>
+      </div>
+      <div id="accuracy">Agreement (last 0 samples): --%</div>
+      <table>
+        <thead>
+          <tr>
+            <th>t</th>
+            <th>Primary cause</th>
+            <th>Confidence</th>
+            <th>Injected faults</th>
+          </tr>
+        </thead>
+        <tbody id="truth-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="simulator.js"></script>
+  <script src="diagnostics.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
